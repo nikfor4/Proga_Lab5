@@ -14,4 +14,9 @@ public class InfoCommand implements Command{
 
         System.out.println();
     }
+
+    @Override
+    public void execute(String[] args) {
+
+    }
 }

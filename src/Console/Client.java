@@ -2,16 +2,23 @@ package Console;
 
 import java.util.Scanner;
 import Commands.CommandProcessor;
+import Util.QueueManager;
 
 public class Client {
-
     public void userInput() {
-        Scanner scanner = new Scanner(System.in);
-        String command = scanner.nextLine();
-        CommandProcessor commandProcessor = new CommandProcessor();
+        QueueManager manager = new QueueManager(13); // Очередь команд (история)
+        CommandProcessor commandProcessor = new CommandProcessor(manager);
 
-        /* Обращаемся к commandprocessor, берем метод put, передаем ему команду,
-        которую ввел пользователь */
-        commandProcessor.CommandPut(command);
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String command = scanner.nextLine();
+
+            if (command.equals("exit")) {
+                System.out.println("Выход...");
+                System.exit(0);
+            }
+
+            commandProcessor.CommandPut(command); // Выполняем команду
+        }
     }
 }

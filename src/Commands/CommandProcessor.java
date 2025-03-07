@@ -1,22 +1,36 @@
 package Commands;
 
+import Util.QueueManager;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandProcessor {
     public static Map<String, Command> commands;
+    private final QueueManager historyManager; // Менеджер истории команд
 
-
-    public void CommandPut(String name) {
-        // Словарь
+    public CommandProcessor(QueueManager historyManager) {
+        this.historyManager = historyManager;
         commands = new HashMap<>();
+
+        // Добавляем команды
         commands.put("help", new HelpCommand());
         commands.put("info", new InfoCommand());
-        // Выполняем команду, которую ввел пользователь
-        commands.get(name).execute();
-
+        commands.put("history", new HistoryCommand(historyManager));
     }
-    public Map<String, Command> getCommands() { // Геттер для доступа к Map
+
+    public void CommandPut(String name) {
+        historyManager.add(name); // Записываем команду в историю
+
+        Command command = commands.get(name);
+        if (command != null) {
+            command.execute();
+        } else {
+            System.out.println("Неизвестная команда: " + name);
+            System.out.println("Воспользуйтесь командой help, что бы узнать какие команды существуют");
+        }
+    }
+
+    public Map<String, Command> getCommands() {
         return commands;
     }
 }

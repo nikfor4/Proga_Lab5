@@ -17,4 +17,9 @@ public class HelpCommand implements Command {
             data.get(entry.getKey()).PrintInfo();
         }
     }
+
+    @Override
+    public void execute(String[] args) {
+
+    }
 }
