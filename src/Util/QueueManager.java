@@ -6,7 +6,7 @@ import java.util.Queue;
 public class QueueManager {
     private final Queue<String> queue;
     private final int maxSize;
-
+// frfrew
     public QueueManager(int maxSize) {
         this.maxSize = maxSize;
         this.queue = new ArrayDeque<>(maxSize);
