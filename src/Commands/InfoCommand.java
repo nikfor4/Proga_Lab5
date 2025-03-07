@@ -3,10 +3,11 @@ package Commands;
 import java.util.Collection;
 
 public class InfoCommand implements Command{
-    private String functionName = "info";
-    private String information = "какая то информация";
+
     @Override
     public void PrintInfo(){
+        String information = "какая то информация";
+        String functionName = "info";
         System.out.println(functionName + " - " + information);
     }
     @Override

@@ -5,6 +5,9 @@ import Commands.CommandProcessor;
 import Util.QueueManager;
 
 public class Client {
+    /**
+     *
+     */
     public void userInput() {
         QueueManager manager = new QueueManager(13); // Очередь команд (история)
         CommandProcessor commandProcessor = new CommandProcessor(manager);

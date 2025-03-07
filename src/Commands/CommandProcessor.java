@@ -19,10 +19,10 @@ public class CommandProcessor {
     }
 
     public void CommandPut(String name) {
-        historyManager.add(name); // Записываем команду в историю
 
         Command command = commands.get(name);
         if (command != null) {
+            historyManager.add(name); // Записываем команду в историю
             command.execute();
         } else {
             System.out.println("Неизвестная команда: " + name);

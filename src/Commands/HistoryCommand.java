@@ -21,6 +21,8 @@ public class HistoryCommand implements Command {
 
     @Override
     public void PrintInfo() {
-        System.out.println("Команда history - показывает последние 13 команд.");
+        String information = "показывает 13 последних команд";
+        String functionName = "history";
+        System.out.println(functionName + " - " + information);
     }
 }
