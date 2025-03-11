@@ -17,7 +17,10 @@ public class Client {
             String command = scanner.nextLine();
 
             if (command.equals("exit")) {
-                System.out.println("Выход...");
+                System.out.println("Выход...\n███████████████████\n" +
+                        "█▄─▄─▀█▄─█─▄█▄─▄▄─█\n" +
+                        "██─▄─▀██▄─▄███─▄█▀█\n" +
+                        "▀▄▄▄▄▀▀▀▄▄▄▀▀▄▄▄▄▄▀");
                 System.exit(0);
             }
 

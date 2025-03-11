@@ -8,7 +8,7 @@ import java.util.TreeSet;
  * Команда для отображения всех билетов в коллекции.
  */
 public class ShowTicketsCommand implements Command {
-    private static final TreeSet<Ticket> tickets = new TreeSet<>();
+    private static final TreeSet<Ticket> tickets = Ticket.getTicket(1);
 
     @Override
     public void execute() {
@@ -34,6 +34,6 @@ public class ShowTicketsCommand implements Command {
 
     @Override
     public void PrintInfo() {
-        System.out.println("Команда для вывода всех билетов в коллекции.");
+        System.out.println("show - Команда для вывода всех билетов в коллекции.");
     }
 }

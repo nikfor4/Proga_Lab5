@@ -1,6 +1,7 @@
 package Collections;
 
 import java.time.LocalDateTime;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -8,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Билеты автоматически получают уникальный ID и время создания.
  */
 public class Ticket implements Comparable<Ticket> {
+    private static final TreeSet<Ticket> tickets = new TreeSet<>();
     private static final AtomicInteger idGenerator = new AtomicInteger(0); // Генератор ID
 
     private final int id; // Уникальный ID (генерируется автоматически)
@@ -17,10 +19,11 @@ public class Ticket implements Comparable<Ticket> {
     private float price;
     private TicketType type;
     private Event event;
+    private LocalDateTime timevent;
 
     /**
      * Приватный конструктор для создания объекта Ticket.
-     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, Event)}.
+     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, Event,LocalDateTime)}.
      *
      * @param id          Уникальный идентификатор билета.
      * @param name        Название билета.
@@ -29,9 +32,10 @@ public class Ticket implements Comparable<Ticket> {
      * @param type        Тип билета.
      * @param event       Событие, к которому относится билет.
      */
-    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event) {
+    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event,LocalDateTime eventTime ) {
         this.id = id;
-        this.creationDate = LocalDateTime.now();
+        this.creationDate = eventTime;
+        this.timevent = eventTime;
         setName(name);
         setCoordinates(coordinates);
         setPrice(price);
@@ -49,8 +53,21 @@ public class Ticket implements Comparable<Ticket> {
      * @param event       Событие, к которому относится билет.
      * @return Новый объект {@link Ticket}.
      */
-    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, Event event) {
-        return new Ticket(idGenerator.incrementAndGet(), name, coordinates, price, type, event);
+    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
+        Ticket ticketTMP = new Ticket(idGenerator.incrementAndGet(), name, coordinates, price, type, event, timevent);
+        tickets.add(ticketTMP);
+        return ticketTMP;
+    }
+    public static TreeSet<Ticket> getTicket(int id) {
+        return tickets;
+    }
+    public static Ticket updateTicket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
+
+                Ticket ticketTMP = new Ticket(id, name, coordinates, price, type, event, timevent);
+                tickets.add(ticketTMP);
+                // Обновите все необходимые поля
+                return ticketTMP;  // Возвращаем обновленный объект
+
     }
 
     /** @return Уникальный идентификатор билета. */
@@ -64,6 +81,9 @@ public class Ticket implements Comparable<Ticket> {
 
     /** @return Дата создания билета. */
     public LocalDateTime getCreationDate() { return creationDate; }
+
+    /** @return Время события билета. */
+    public LocalDateTime getTimevent() { return timevent; }
 
     /** @return Цена билета. */
     public float getPrice() { return price; }
@@ -131,6 +151,6 @@ public class Ticket implements Comparable<Ticket> {
      */
     @Override
     public String toString() {
-        return id + "," + name + "," + coordinates + "," + creationDate + "," + price + "," + type + "," + event;
+        return id + "," + name + "," + coordinates + "," + timevent + "," + price + "," + type + "," + event;
     }
 }

@@ -18,6 +18,9 @@ public class CommandProcessor {
         commands.put("add", new AddTicketCommand());
         commands.put("update", new UpdateTicketCommand());
         commands.put("show", new ShowTicketsCommand());
+        commands.put("print_ascending", new PrintAscendingTicketCommand());
+        commands.put("remove_by_id", new RemovebyidTicketCommand());
+        commands.put("clear", new ClearTicketCommand());
     }
 
     public void CommandPut(String input) {

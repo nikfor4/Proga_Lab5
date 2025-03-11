@@ -1,6 +1,6 @@
 package Collections;
 
-import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Event {
     private long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
@@ -11,7 +11,7 @@ public class Event {
     public Event(String defaultEvent) {
     }
 
-    public Event(String defaultEvent, LocalDateTime eventTime, EventType eventType) {
+    public Event(String defaultEvent, EventType eventType) {
     }
 
     public void Event(long id, String name, long minAge, EventType eventType){
