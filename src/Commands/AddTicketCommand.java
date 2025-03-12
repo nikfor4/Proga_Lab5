@@ -5,6 +5,7 @@ import Collections.Event;
 import Collections.EventType;
 import Collections.TicketType;
 import Collections.Coordinates;
+import Validation.InputValidate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,14 +26,46 @@ public class AddTicketCommand implements Command {
     public void execute() {
         Scanner scanner = new Scanner(System.in);
         try {
-            String name = getInput(scanner, "Введите имя билета: ");
-            int x = getIntInput(scanner, "Введите координату X: ");
-            int y = getIntInput(scanner, "Введите координату Y: ");
+            String name = InputValidate.getInput(scanner, "Введите имя билета: ");
+            if (name == null) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
+            int x = InputValidate.getIntInput(scanner, "Введите координату X: ");
+            if (x == Integer.MIN_VALUE) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
+            int y = InputValidate.getIntInput(scanner, "Введите координату Y: ");
+            if (y == Integer.MIN_VALUE) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
             Coordinates coordinates = new Coordinates(x, y);
-            float price = (float) (getIntInput(scanner, "Введите цену билета: "));
-            LocalDateTime eventTime = getDateTimeInput(scanner, "Введите дату и время события (yyyy-MM-ddTHH:mm:ss): ");
-            TicketType ticketType = getValidTicketType(scanner, "Введите тип билета (VIP, USUAL, BUDGETARY): ");
-            EventType eventType = getValidEventType(scanner, "Введите тип события (CONCERT, FOOTBALL, BASKETBALL, OPERA, EXPOSITION): ");
+
+            float price = InputValidate.getFloatInput(scanner, "Введите цену билета больше 0: ");
+            if (price == Float.MIN_VALUE) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
+            LocalDateTime eventTime = LocalDateTime.now();
+
+            TicketType ticketType = InputValidate.getValidTicketType(scanner, "Введите тип билета (VIP, USUAL, BUDGETARY): ");
+            if (ticketType == null) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
+            EventType eventType = InputValidate.getValidEventType(scanner, "Введите тип события (CONCERT, FOOTBALL, BASKETBALL, OPERA, EXPOSITION): ");
+            if (eventType == null) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
             Event event = new Event("Default Event", eventType);
             Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, event, eventTime);
 
@@ -46,125 +79,7 @@ public class AddTicketCommand implements Command {
         }
     }
 
-    /**
-     * Запрашивает ввод данных у пользователя, проверяя их на корректность.
-     * Позволяет пользователю выйти из команды, введя "quit".
-     *
-     * @param scanner Scanner для считывания ввода пользователя.
-     * @param prompt Сообщение для запроса ввода.
-     * @return Корректное введенное значение.
-     */
-    private String getInput(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine().trim();
-            if (input.equalsIgnoreCase("quit")) {
-                System.out.println("Выход из команды.");
-                System.exit(0);
-            }
-            if (!input.isEmpty()) {
-                return input;
-            }
-            System.out.println("Ошибка: ввод не может быть пустым. Попробуйте снова.");
-        }
-    }
 
-    /**
-     * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
-     * Позволяет пользователю выйти из команды, введя "quit".
-     *
-     * @param scanner Scanner для считывания ввода пользователя.
-     * @param prompt Сообщение для запроса ввода.
-     * @return Корректное целочисленное значение.
-     */
-    private int getIntInput(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine().trim();
-            if (input.equalsIgnoreCase("quit")) {
-                System.out.println("Выход из команды.");
-                System.exit(0);
-            }
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Ошибка: введите корректное целочисленное значение.");
-            }
-        }
-    }
-
-    /**
-     * Запрашивает ввод даты и времени у пользователя с проверкой корректности.
-     * Позволяет пользователю выйти из команды, введя "quit".
-     *
-     * @param scanner Scanner для считывания ввода пользователя.
-     * @param prompt  Сообщение для запроса ввода.
-     * @return Корректное значение LocalDateTime.
-     */
-    private LocalDateTime getDateTimeInput(Scanner scanner, String prompt) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine().trim();
-            if (input.equalsIgnoreCase("quit")) {
-                System.out.println("Выход из команды.");
-                System.exit(0);
-            }
-            try {
-                return LocalDateTime.parse(input, formatter);
-            } catch (DateTimeParseException e) {
-                System.out.println("Ошибка: введите дату и время в формате yyyy-MM-ddTHH:mm:ss.");
-            }
-        }
-    }
-
-    /**
-     * Запрашивает ввод типа билета и проверяет корректность ввода.
-     * Позволяет пользователю выйти из команды, введя "quit".
-     *
-     * @param scanner Scanner для считывания ввода пользователя.
-     * @param prompt  Сообщение для запроса ввода.
-     * @return Корректное значение TicketType.
-     */
-    private TicketType getValidTicketType(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine().trim().toUpperCase();
-            if (input.equalsIgnoreCase("quit")) {
-                System.out.println("Выход из команды.");
-                System.exit(0);
-            }
-            try {
-                return TicketType.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: допустимые значения - VIP, USUAL, BUDGETARY. Попробуйте снова.");
-            }
-        }
-    }
-
-    /**
-     * Запрашивает ввод типа события и проверяет корректность ввода.
-     * Позволяет пользователю выйти из команды, введя "quit".
-     *
-     * @param scanner Scanner для считывания ввода пользователя.
-     * @param prompt  Сообщение для запроса ввода.
-     * @return Корректное значение EventType.
-     */
-    private EventType getValidEventType(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine().trim().toUpperCase();
-            if (input.equalsIgnoreCase("quit")) {
-                System.out.println("Выход из команды.");
-                System.exit(0);
-            }
-            try {
-                return EventType.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: допустимые значения - CONCERT, FOOTBALL, BASKETBALL, OPERA, EXPOSITION. Попробуйте снова.");
-            }
-        }
-    }
 
     /**
      * Заглушка для метода выполнения команды с аргументами, сообщает об ошибке.

@@ -13,6 +13,7 @@ public class PrintAscendingTicketCommand implements Command {
 
     @Override
     public void PrintInfo() {
-        System.out.println("print_ascending -  ");
+        System.out.println("print_ascending - вывод билетов в порядке возрастания id ");
     }
 }
+

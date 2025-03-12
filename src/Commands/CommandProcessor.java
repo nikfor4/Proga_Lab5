@@ -21,6 +21,9 @@ public class CommandProcessor {
         commands.put("print_ascending", new PrintAscendingTicketCommand());
         commands.put("remove_by_id", new RemovebyidTicketCommand());
         commands.put("clear", new ClearTicketCommand());
+        commands.put("remove_greater", new RemoveGreaterTicketCommad());
+        commands.put("remove_lower", new RemoveLowerTicketCommad());
+        commands.put("remove_any_by_price", new RemoveAnyByPriceTicketCommand());
     }
 
     public void CommandPut(String input) {
