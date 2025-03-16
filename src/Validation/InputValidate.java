@@ -128,7 +128,25 @@ public class InputValidate {
         return ticketType; // Возвращаем либо корректное значение, либо null
     }
 
+    public static TicketType getValidTicketTypeInput(String scanner) {
+        TicketType ticketType = null;
+        while (true) {
+            String input =scanner;
 
+            if (input.equalsIgnoreCase("quit")) {
+                break; // Выходим из цикла, но метод продолжает выполняться
+            }
+
+            try {
+                ticketType = TicketType.valueOf(input);
+                break; // Ввод корректный, выходим из цикла
+            } catch (IllegalArgumentException e) {
+                System.out.println("Ошибка: допустимые значения - VIP, USUAL, BUDGETARY. Попробуйте снова.");
+                return null;
+            }
+        }
+        return ticketType; // Возвращаем либо корректное значение, либо null
+    }
 
     /**
      * Запрашивает ввод типа события и проверяет корректность ввода.

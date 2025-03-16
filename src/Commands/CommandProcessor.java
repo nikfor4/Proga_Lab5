@@ -24,6 +24,9 @@ public class CommandProcessor {
         commands.put("remove_greater", new RemoveGreaterTicketCommad());
         commands.put("remove_lower", new RemoveLowerTicketCommad());
         commands.put("remove_any_by_price", new RemoveAnyByPriceTicketCommand());
+        commands.put("execute_script", new ExecuteScript());
+        commands.put("save", new SaveTicketCommand());
+        commands.put("count_less_than_type", new СountLessThanTypeCommand());
     }
 
     public void CommandPut(String input) {

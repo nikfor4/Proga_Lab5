@@ -1,6 +1,8 @@
 package Collections;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,12 +20,12 @@ public class Ticket implements Comparable<Ticket> {
     private final LocalDateTime creationDate; // Дата создания (устанавливается автоматически)
     private float price;
     private TicketType type;
-    private Event event;
+    private EventType event;
     private LocalDateTime timevent;
 
     /**
      * Приватный конструктор для создания объекта Ticket.
-     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, Event,LocalDateTime)}.
+     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, EventType,LocalDateTime)}.
      *
      * @param id          Уникальный идентификатор билета.
      * @param name        Название билета.
@@ -32,7 +34,7 @@ public class Ticket implements Comparable<Ticket> {
      * @param type        Тип билета.
      * @param event       Событие, к которому относится билет.
      */
-    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event,LocalDateTime eventTime ) {
+    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, EventType event,LocalDateTime eventTime ) {
         this.id = id;
         this.creationDate = eventTime;
         this.timevent = eventTime;
@@ -42,7 +44,19 @@ public class Ticket implements Comparable<Ticket> {
         this.type = type;
         this.event = event;
     }
+    /**
+     * Определяет следующее свободное ID, проверяя пропущенные значения.
+     */
+    private static int getNextId() {
+        Set<Integer> usedIds = new HashSet<>();
+        tickets.forEach(ticket -> usedIds.add(ticket.getId()));
 
+        int nextId = 1;
+        while (usedIds.contains(nextId)) {
+            nextId++;
+        }
+        return nextId;
+    }
     /**
      * Фабричный метод для создания нового билета.
      *
@@ -53,15 +67,15 @@ public class Ticket implements Comparable<Ticket> {
      * @param event       Событие, к которому относится билет.
      * @return Новый объект {@link Ticket}.
      */
-    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
-        Ticket ticketTMP = new Ticket(idGenerator.incrementAndGet(), name, coordinates, price, type, event, timevent);
+    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, EventType event, LocalDateTime timevent) {
+        Ticket ticketTMP = new Ticket(getNextId(), name, coordinates, price, type, event, timevent);
         tickets.add(ticketTMP);
         return ticketTMP;
     }
     public static TreeSet<Ticket> getTicket(int id) {
         return tickets;
     }
-    public static Ticket updateTicket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
+    public static Ticket updateTicket(int id, String name, Coordinates coordinates, float price, TicketType type, EventType event, LocalDateTime timevent) {
 
                 Ticket ticketTMP = new Ticket(id, name, coordinates, price, type, event, timevent);
                 tickets.add(ticketTMP);
@@ -91,8 +105,10 @@ public class Ticket implements Comparable<Ticket> {
     /** @return Тип билета. */
     public TicketType getType() { return type; }
 
-    /** @return Событие, к которому относится билет. */
-    public Event getEvent() { return event; }
+    /**
+     * @return Событие, к которому относится билет.
+     */
+    public EventType getEvent() { return event; }
 
     /**
      * Устанавливает название билета.
@@ -151,6 +167,14 @@ public class Ticket implements Comparable<Ticket> {
      */
     @Override
     public String toString() {
-        return id + "," + name + "," + coordinates + "," + timevent + "," + price + "," + type + "," + event;
+        String minutes = String.format("%02d", timevent.getMinute());
+        return "id: " + id + "\nназвание: " + name + "\nкоординаты: X: " + coordinates.getX() +
+                ", Y: "+ coordinates.getY() + "\nдата: "+ timevent.getDayOfMonth() + " " + timevent.getMonth() +
+                " " + timevent.getYear() + "\nвремя: " + timevent.getHour() +":"+ minutes + "\nЦена: "
+                + price + "\nТип билета: " + type + "\nТип мероприятия: " + event;
     }
+    public String toCSV() {
+        return id + "," + name + "," + coordinates + ","+ timevent + "," + price + "," + type + "," + event;
+    }
+
 }

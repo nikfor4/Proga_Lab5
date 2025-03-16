@@ -54,6 +54,7 @@ public class AddTicketCommand implements Command {
 
             LocalDateTime eventTime = LocalDateTime.now();
 
+
             TicketType ticketType = InputValidate.getValidTicketType(scanner, "Введите тип билета (VIP, USUAL, BUDGETARY): ");
             if (ticketType == null) {
                 System.out.println("Билет не был создан.");
@@ -66,8 +67,7 @@ public class AddTicketCommand implements Command {
                 return;
             }
 
-            Event event = new Event("Default Event", eventType);
-            Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, event, eventTime);
+            Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, eventType, eventTime);
 
             if (tickets.add(ticket)) {
                 System.out.println("Билет " + name + " добавлен.");

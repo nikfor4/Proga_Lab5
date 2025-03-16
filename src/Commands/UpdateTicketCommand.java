@@ -78,15 +78,13 @@ public class UpdateTicketCommand implements Command {
                 return;
             }
 
-            Event event = new Event("Default Event", eventType);
-
 
             while (iterator.hasNext()){
                 Ticket ticket = iterator.next();
 
                 if (ticket.getId() == id) {
                     iterator.remove(); // Удаляем старый билет
-                    Ticket updatedTicket = Ticket.updateTicket(id, name, coordinates, price, ticketType, event,eventTime);
+                    Ticket updatedTicket = Ticket.updateTicket(id, name, coordinates, price, ticketType, eventType,eventTime);
                     System.out.println("Билет с ID " + id + " обновлен: " + updatedTicket);
                     return;
                 }

@@ -5,10 +5,12 @@ import Commands.CommandProcessor;
 import Util.QueueManager;
 
 public class Client {
+    public static String Filename;
     /**
      *
      */
-    public void userInput() {
+    public void userInput(String filename) {
+        Filename = filename;
         QueueManager manager = new QueueManager(13); // Очередь команд (история)
         CommandProcessor commandProcessor = new CommandProcessor(manager);
 
@@ -30,4 +32,8 @@ public class Client {
             commandProcessor.CommandPut(command); // Выполняем команду
         }
     }
+    public static String getFilename() {
+        return Filename;
+    }
+
 }

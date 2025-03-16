@@ -18,6 +18,7 @@ public class ShowTicketsCommand implements Command {
             System.out.println("Список всех билетов:");
             for (Ticket ticket : tickets) {
                 System.out.println(ticket);
+                System.out.println();
             }
         }
     }
@@ -34,6 +35,6 @@ public class ShowTicketsCommand implements Command {
 
     @Override
     public void PrintInfo() {
-        System.out.println("show - Команда для вывода всех билетов в коллекции.");
+        System.out.println("show - команда для вывода всех билетов в коллекции.");
     }
 }

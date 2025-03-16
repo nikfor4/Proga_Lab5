@@ -22,7 +22,7 @@ public class RemoveLowerTicketCommad implements Command {
 
             if (ticket.getId() <= id) {
                 iterator.remove();
-                System.out.println("Билет с id " + id + " удален");
+                System.out.println("Билет с id " + ticket.getId() + " удален");
             }
 
         }
