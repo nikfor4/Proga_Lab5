@@ -2,23 +2,50 @@ package Commands;
 
 import Collections.Ticket;
 
-import java.util.Collection;
+/**
+ * Команда {@code InfoCommand} выводит информацию о коллекции билетов.
+ * Команда выводит описание коллекции и количество элементов в ней.
+ */
+public class InfoCommand implements Command {
 
-public class InfoCommand implements Command{
-
+    /**
+     * Выводит описание команды {@code info}.
+     * Эта команда предоставляет информацию о коллекции билетов.
+     */
     @Override
-    public void PrintInfo(){
-        String information = "какая то информация";
-        String functionName = "info";
-        System.out.println(functionName + " - " + information);
+    public void PrintInfo() {
+        System.out.println("info - выводит информацию о коллекции");
     }
+
+    /**
+     * Выводит информацию о коллекции билетов.
+     * В данной реализации выводится примерный формат, который может быть дополнен
+     * дополнительными сведениями о состоянии коллекции (например, количество элементов и т.д.).
+     */
     @Override
     public void execute() {
-
-        System.out.println();
+        System.out.println("Коллекция билетов состоит из\n" +
+                "Id" +
+                "Имя\n" +
+                "Координаты\n" +
+                "Дата\n" +
+                "Цена\n" +
+                "Тип билета\n" +
+                "__Event__\n" +
+                "Id_event\n" +
+                "Имя евента\n" +
+                "Возраст евента\n" +
+                "Тип евента");
     }
 
+    /**
+     * Выводит сообщение о том, что команда {@code info} не принимает аргументы.
+     * Этот метод вызывается, если команда выполняется с аргументами.
+     *
+     * @param args Аргументы команды (не используются в данной реализации).
+     */
     @Override
     public void execute(String[] args) {
+        System.out.println("Команда info вводится без аргументов");
     }
 }

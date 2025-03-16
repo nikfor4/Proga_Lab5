@@ -1,5 +1,7 @@
 package Commands;
 
+import Util.RobotInput;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,17 +11,33 @@ import java.util.Arrays;
 import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
+/**
+ * Класс {@code ExecuteScript} представляет команду для выполнения скриптов из указанного файла.
+ * Скрипт выполняет команды, прочитанные из файла, с блокировкой ввода пользователя.
+ */
 public class ExecuteScript implements Command {
 
+    /** Блокировка для синхронизации ввода пользователя. */
     private static final Semaphore inputLock = new Semaphore(1);
 
+    /** Стек, в котором хранится список файлов скриптов, чтобы избежать рекурсии. */
     private static Stack<String> inputStack = new Stack<>();
 
+    /**
+     * Запрашивает у пользователя путь к файлу скрипта.
+     */
     @Override
     public void execute() {
         System.out.println("Укажите путь к файлу скрипта.");
     }
 
+    /**
+     * Выполняет команды из файла, указанного в аргументе.
+     * Проверяет, существует ли файл, и не вызывает сам себя.
+     * Запускает выполнение в отдельном потоке, блокируя ввод во время выполнения.
+     *
+     * @param args Параметры команды. Ожидается путь к файлу.
+     */
     @Override
     public void execute(String[] args) {
         if (args == null || args.length == 0) {
@@ -57,6 +75,12 @@ public class ExecuteScript implements Command {
 
     }
 
+    /**
+     * Читает строки из файла и выполняет каждую команду.
+     * Выводит содержимое файла и запускает выполнение команд.
+     *
+     * @param filePath Путь к файлу, который будет обработан.
+     */
     private void executeScript(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             // Чтение строк из файла и помещение их в массив
@@ -76,15 +100,29 @@ public class ExecuteScript implements Command {
         }
     }
 
+    /**
+     * Выполняет команду, используя {@code RobotInput}.
+     *
+     * @param line Строка, представляющая команду для выполнения.
+     */
     private void robotInput(String line) {
         RobotInput.execute(line);
     }
 
+    /**
+     * Выводит информацию о команде {@code execute_script}.
+     * Описание функционала команды.
+     */
     @Override
     public void PrintInfo() {
-        System.out.println("Команда execute_script — выполняет команды из указанного файла.");
+        System.out.println("execute_script filepath — выполняет команды из указанного файла.");
     }
 
+    /**
+     * Получает блокировку ввода.
+     *
+     * @return Блокировка для синхронизации ввода пользователя.
+     */
     public static Semaphore getInputLock() {
         return inputLock;
     }

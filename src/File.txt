@@ -4,6 +4,8 @@ namename1
 321
 100
 USUAL
+name
+123
 opera
 add
 namename1
@@ -11,11 +13,15 @@ namename1
 321
 100
 USUAL
+name
+123
 opera
 add
 namename1
 123
 321
 100
-vip
+USUAL
+name
+123
 opera

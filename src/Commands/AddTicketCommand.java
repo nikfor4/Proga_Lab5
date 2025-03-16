@@ -61,13 +61,25 @@ public class AddTicketCommand implements Command {
                 return;
             }
 
+            String eventName = InputValidate.getInput(scanner, "Введите название события: ");
+            if (eventName == null) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+            int eventAge = InputValidate.getIntInputPlus(scanner, "Введите возраст для события < 0: ");
+            if (eventAge == Integer.MIN_VALUE) {
+                System.out.println("Билет не был создан.");
+                return;
+            }
+
             EventType eventType = InputValidate.getValidEventType(scanner, "Введите тип события (CONCERT, FOOTBALL, BASKETBALL, OPERA, EXPOSITION): ");
             if (eventType == null) {
                 System.out.println("Билет не был создан.");
                 return;
             }
+            Event event = Event.createEvent(eventName,eventAge,eventType);
 
-            Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, eventType, eventTime);
+            Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, event, eventTime);
 
             if (tickets.add(ticket)) {
                 System.out.println("Билет " + name + " добавлен.");
@@ -96,6 +108,6 @@ public class AddTicketCommand implements Command {
      */
     @Override
     public void PrintInfo() {
-        System.out.println("Add - Команда для обновления билета по ID.");
+        System.out.println("add - Команда для обновления билета по ID.");
     }
 }

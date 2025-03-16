@@ -59,6 +59,32 @@ public class InputValidate {
      * @param prompt Сообщение для запроса ввода.
      * @return Корректное целочисленное значение.
      */
+    public static int getIntInputPlus(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("quit")) {
+                break;
+            }
+            try {
+                if (Integer.parseInt(input) > 0){
+                    return Integer.parseInt(input);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка: введите корректное положительное целочисленное значение.");
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+    /**
+     * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
+     * Позволяет пользователю выйти из команды, введя "quit".
+     *
+     * @param scanner Scanner для считывания ввода пользователя.
+     * @param prompt Сообщение для запроса ввода.
+     * @return Корректное целочисленное значение.
+     */
     public static float getFloatInput(Scanner scanner, String prompt) {
         while (true) {
             System.out.print(prompt);

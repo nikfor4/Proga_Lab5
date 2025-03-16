@@ -16,9 +16,11 @@ public class ShowTicketsCommand implements Command {
             System.out.println("Коллекция билетов пуста.");
         } else {
             System.out.println("Список всех билетов:");
+
             for (Ticket ticket : tickets) {
-                System.out.println(ticket);
                 System.out.println();
+                System.out.println(ticket);
+
             }
         }
     }
@@ -30,7 +32,7 @@ public class ShowTicketsCommand implements Command {
      */
     @Override
     public void execute(String[] args) {
-        execute(); // Просто вызываем основную версию метода
+        System.out.println("Команда show вводится без аргументов");
     }
 
     @Override

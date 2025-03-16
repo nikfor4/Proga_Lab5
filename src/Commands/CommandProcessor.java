@@ -4,10 +4,22 @@ import Util.QueueManager;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс {@code CommandProcessor} отвечает за обработку и выполнение команд.
+ * Он управляет списком доступных команд и передает управление соответствующему объекту команды.
+ */
 public class CommandProcessor {
+    /** Коллекция доступных команд, где ключ - это название команды, а значение - соответствующий объект {@code Command}. */
     public static Map<String, Command> commands;
+
+    /** Менеджер истории команд. */
     private final QueueManager historyManager;
 
+    /**
+     * Создает объект {@code CommandProcessor} и инициализирует список доступных команд.
+     *
+     * @param historyManager Менеджер истории команд.
+     */
     public CommandProcessor(QueueManager historyManager) {
         this.historyManager = historyManager;
         commands = new HashMap<>();
@@ -26,9 +38,15 @@ public class CommandProcessor {
         commands.put("remove_any_by_price", new RemoveAnyByPriceTicketCommand());
         commands.put("execute_script", new ExecuteScript());
         commands.put("save", new SaveTicketCommand());
-        commands.put("count_less_than_type", new СountLessThanTypeCommand());
+        commands.put("count_less_than_type", new CountLessThanTypeCommand());
+        commands.put("exit", new ExitCommand());
     }
 
+    /**
+     * Выполняет команду, введенную пользователем.
+     *
+     * @param input Строка с командой и аргументами (если есть).
+     */
     public void CommandPut(String input) {
         String[] parts = input.split(" ", 2);
         String name = parts[0];
@@ -48,6 +66,11 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * Возвращает коллекцию доступных команд.
+     *
+     * @return {@code Map}, содержащая названия команд и соответствующие объекты {@code Command}.
+     */
     public Map<String, Command> getCommands() {
         return commands;
     }

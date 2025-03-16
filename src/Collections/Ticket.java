@@ -20,12 +20,12 @@ public class Ticket implements Comparable<Ticket> {
     private final LocalDateTime creationDate; // Дата создания (устанавливается автоматически)
     private float price;
     private TicketType type;
-    private EventType event;
+    private Event event;
     private LocalDateTime timevent;
 
     /**
      * Приватный конструктор для создания объекта Ticket.
-     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, EventType,LocalDateTime)}.
+     * Используйте фабричный метод {@link #createTicket(String, Coordinates, float, TicketType, Event,LocalDateTime)}.
      *
      * @param id          Уникальный идентификатор билета.
      * @param name        Название билета.
@@ -34,7 +34,7 @@ public class Ticket implements Comparable<Ticket> {
      * @param type        Тип билета.
      * @param event       Событие, к которому относится билет.
      */
-    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, EventType event,LocalDateTime eventTime ) {
+    private Ticket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event,LocalDateTime eventTime ) {
         this.id = id;
         this.creationDate = eventTime;
         this.timevent = eventTime;
@@ -67,7 +67,7 @@ public class Ticket implements Comparable<Ticket> {
      * @param event       Событие, к которому относится билет.
      * @return Новый объект {@link Ticket}.
      */
-    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, EventType event, LocalDateTime timevent) {
+    public static Ticket createTicket(String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
         Ticket ticketTMP = new Ticket(getNextId(), name, coordinates, price, type, event, timevent);
         tickets.add(ticketTMP);
         return ticketTMP;
@@ -75,7 +75,7 @@ public class Ticket implements Comparable<Ticket> {
     public static TreeSet<Ticket> getTicket(int id) {
         return tickets;
     }
-    public static Ticket updateTicket(int id, String name, Coordinates coordinates, float price, TicketType type, EventType event, LocalDateTime timevent) {
+    public static Ticket updateTicket(int id, String name, Coordinates coordinates, float price, TicketType type, Event event, LocalDateTime timevent) {
 
                 Ticket ticketTMP = new Ticket(id, name, coordinates, price, type, event, timevent);
                 tickets.add(ticketTMP);
@@ -108,7 +108,7 @@ public class Ticket implements Comparable<Ticket> {
     /**
      * @return Событие, к которому относится билет.
      */
-    public EventType getEvent() { return event; }
+    public String getEvent() { return event.getEventType() + "," + event.getName() + "," + event.getMinAge() + "," + event.getEventType(); }
 
     /**
      * Устанавливает название билета.
@@ -160,19 +160,21 @@ public class Ticket implements Comparable<Ticket> {
         return Integer.compare(this.id, other.id);
     }
 
-    /**
-     * Преобразует билет в строку для удобного вывода.
-     *
-     * @return Строковое представление билета.
-     */
+
     @Override
     public String toString() {
         String minutes = String.format("%02d", timevent.getMinute());
         return "id: " + id + "\nназвание: " + name + "\nкоординаты: X: " + coordinates.getX() +
                 ", Y: "+ coordinates.getY() + "\nдата: "+ timevent.getDayOfMonth() + " " + timevent.getMonth() +
                 " " + timevent.getYear() + "\nвремя: " + timevent.getHour() +":"+ minutes + "\nЦена: "
-                + price + "\nТип билета: " + type + "\nТип мероприятия: " + event;
+                + price + "\nТип билета: " + type + "\nНазвание мероприятия: " + event.getName() + "\nМинимальный возраст: " +
+                event.getMinAge() + "\nТип мероприятия: " + event.getEventType();
     }
+    /**
+     * Преобразует билет в строку для удобного вывода.
+     *
+     * @return Строковое представление билета.
+     */
     public String toCSV() {
         return id + "," + name + "," + coordinates + ","+ timevent + "," + price + "," + type + "," + event;
     }
