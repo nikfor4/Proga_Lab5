@@ -7,24 +7,47 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 /**
- * Класс {@code ExecuteScript} представляет команду для выполнения скриптов из указанного файла.
- * Скрипт выполняет команды, прочитанные из файла, с блокировкой ввода пользователя.
+ * Класс {@code ExecuteScriptCommand} реализует команду execute_script для выполнения команд из указанного скриптового файла.
+ * Поддерживает вложенные вызовы скриптов и предотвращает рекурсивные вызовы одного и того же скрипта.
+ * При выполнении скриптов пользовательский ввод блокируется.
  */
 public class ExecuteScriptCommand implements Command {
 
-    /** Блокировка для синхронизации ввода пользователя. */
+    /** Блокировка для синхронизации ввода пользователя во время выполнения скриптов. */
     private static final Semaphore inputLock = new Semaphore(1);
 
-    /** Стек, в котором хранится список файлов скриптов, чтобы избежать рекурсии. */
-    private static Stack<String> inputStack = new Stack<>();
+    /** Стек для хранения контекста выполнения вложенных скриптов. */
+    private static final Stack<ScriptContext> scriptStack = new Stack<>();
 
     /**
-     * Запрашивает у пользователя путь к файлу скрипта.
+     * Внутренний класс, представляющий контекст выполнения конкретного скрипта.
+     */
+    private static class ScriptContext {
+        /** Путь к файлу скрипта. */
+        String filePath;
+        /** Список строк (команд) скрипта. */
+        List<String> lines;
+        /** Индекс текущей обрабатываемой строки скрипта. */
+        int currentLine;
+
+        /**
+         * Конструктор контекста скрипта.
+         * @param filePath путь к файлу скрипта
+         * @param lines список строк скрипта
+         */
+        ScriptContext(String filePath, List<String> lines) {
+            this.filePath = filePath;
+            this.lines = lines;
+            this.currentLine = 0;
+        }
+    }
+
+    /**
+     * Запрашивает у пользователя путь к скрипту.
      */
     @Override
     public void execute() {
@@ -32,11 +55,10 @@ public class ExecuteScriptCommand implements Command {
     }
 
     /**
-     * Выполняет команды из файла, указанного в аргументе.
-     * Проверяет, существует ли файл, и не вызывает сам себя.
-     * Запускает выполнение в отдельном потоке, блокируя ввод во время выполнения.
+     * Запускает выполнение скрипта из указанного файла с поддержкой вложенных скриптов.
+     * Блокирует пользовательский ввод на время выполнения.
      *
-     * @param args Параметры команды. Ожидается путь к файлу.
+     * @param args массив аргументов, где ожидается путь к файлу скрипта.
      */
     @Override
     public void execute(String[] args) {
@@ -47,81 +69,112 @@ public class ExecuteScriptCommand implements Command {
 
         String filePath = args[0];
 
-        // Проверка, существует ли файл
         if (!Files.exists(Paths.get(filePath))) {
             System.out.println("Ошибка: файл не найден по пути: " + filePath);
             return;
         }
-        if (inputStack.contains(filePath)) {
-            System.out.println("Скрипт не может вызывать сам себя");
+
+        if (scriptStack.stream().anyMatch(ctx -> ctx.filePath.equals(filePath))) {
+            System.out.println("Ошибка: обнаружена рекурсия при вызове скрипта: " + filePath);
             return;
         }
-        // Попытка захватить блокировку
+
         try {
-            inputLock.acquire(); // Блокируем ввод пользователя
+            inputLock.acquire(); // Блокируем пользовательский ввод
+
             new Thread(() -> {
                 try {
-                    inputStack.push(filePath);
-                    executeScript(filePath);
-                    inputStack.pop();
+                    pushAndExecute(filePath);
                 } finally {
-                    inputLock.release(); // Освобождаем ввод после выполнения
+                    if (scriptStack.isEmpty()) {
+                        inputLock.release(); // Освобождаем ввод после завершения всех скриптов
+                    }
                 }
             }).start();
 
         } catch (InterruptedException e) {
             System.out.println("Ошибка при блокировке ввода: " + e.getMessage());
         }
-
     }
 
     /**
-     * Читает строки из файла и выполняет каждую команду.
-     * Выводит содержимое файла и запускает выполнение команд.
+     * Загружает скрипт в стек и запускает его выполнение.
      *
-     * @param filePath Путь к файлу, который будет обработан.
+     * @param filePath путь к файлу скрипта
      */
-    private void executeScript(String filePath) {
+    private void pushAndExecute(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            // Чтение строк из файла и помещение их в массив
-            String[] lines = reader.lines().toArray(String[]::new);
-            System.out.println("Содержимое файла: " + Arrays.toString(lines));
-
-            if (lines.length > 0) {
-                for (String line : lines) {
-                    robotInput(line);
-                }
-            } else {
-                System.out.println("Файл пустой: " + filePath);
-            }
-
+            List<String> lines = reader.lines().toList();
+            scriptStack.push(new ScriptContext(filePath, lines));
+            processScript();
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
         }
     }
 
     /**
-     * Выполняет команду, используя {@code RobotInput}.
+     * Обрабатывает команды скриптов в стеке, поддерживая вложенные вызовы.
+     * После завершения вложенного скрипта возвращается к предыдущему.
+     */
+    private void processScript() {
+        while (!scriptStack.isEmpty()) {
+            ScriptContext ctx = scriptStack.peek();
+            while (ctx.currentLine < ctx.lines.size()) {
+                String line = ctx.lines.get(ctx.currentLine).trim();
+                ctx.currentLine++;
+
+                if (line.isEmpty()) continue;
+
+                if (line.startsWith("execute_script")) {
+                    String[] tokens = line.split("\\s+");
+                    if (tokens.length > 1) {
+                        String nestedPath = tokens[1];
+                        if (scriptStack.stream().anyMatch(s -> s.filePath.equals(nestedPath))) {
+                            System.out.println("\nОшибка: обнаружена рекурсия при вызове скрипта: " + nestedPath);
+                            continue;
+                        }
+                        try (BufferedReader nestedReader = new BufferedReader(new FileReader(nestedPath))) {
+                            List<String> nestedLines = nestedReader.lines().toList();
+                            scriptStack.push(new ScriptContext(nestedPath, nestedLines));
+                            break; // Переход к обработке вложенного скрипта
+                        } catch (IOException e) {
+                            System.out.println("\nОшибка чтения файла: " + e.getMessage());
+                        }
+                    } else {
+                        System.out.println("\nОшибка: путь к скрипту не указан в строке: " + line);
+                    }
+                } else {
+                    robotInput(line);
+                }
+            }
+
+            if (ctx.currentLine >= ctx.lines.size()) {
+                scriptStack.pop();
+            }
+        }
+    }
+
+    /**
+     * Выполняет команду, переданную строкой, с помощью {@link RobotInput}.
      *
-     * @param line Строка, представляющая команду для выполнения.
+     * @param line строка-команда для выполнения
      */
     private void robotInput(String line) {
         RobotInput.execute(line);
     }
 
     /**
-     * Выводит информацию о команде {@code execute_script}.
-     * Описание функционала команды.
+     * Выводит описание команды {@code execute_script}.
      */
     @Override
     public void PrintInfo() {
-        System.out.println("execute_script filepath — выполняет команды из указанного файла.");
+        System.out.println("execute_script filepath — выполняет команды из указанного файла с поддержкой вложенных вызовов.");
     }
 
     /**
-     * Получает блокировку ввода.
+     * Предоставляет доступ к блокировке пользовательского ввода.
      *
-     * @return Блокировка для синхронизации ввода пользователя.
+     * @return {@link Semaphore} для синхронизации ввода пользователя
      */
     public static Semaphore getInputLock() {
         return inputLock;

@@ -16,6 +16,7 @@ USUAL
 name
 123
 opera
+execute_script Fl.txt
 add
 namename1
 123
@@ -25,3 +26,4 @@ USUAL
 name
 123
 opera
+show
