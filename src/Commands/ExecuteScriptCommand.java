@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
  * Класс {@code ExecuteScript} представляет команду для выполнения скриптов из указанного файла.
  * Скрипт выполняет команды, прочитанные из файла, с блокировкой ввода пользователя.
  */
-public class ExecuteScript implements Command {
+public class ExecuteScriptCommand implements Command {
 
     /** Блокировка для синхронизации ввода пользователя. */
     private static final Semaphore inputLock = new Semaphore(1);
