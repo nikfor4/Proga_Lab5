@@ -100,7 +100,24 @@ public class AddTicketCommand implements Command {
      */
     @Override
     public void execute(String[] args) {
-        System.out.println("Ошибка: используйте команду без аргументов для пошагового ввода данных.");
+        if(args.length == 8){
+            String name = InputValidate.getInput(args[0]);
+            int x = InputValidate.getIntInput(args[1]);
+            int y = InputValidate.getIntInput(args[2]);
+            Coordinates coordinates = new Coordinates(x, y);
+            float price = InputValidate.getFloatInput(args[3]);
+            LocalDateTime eventTime = LocalDateTime.now();
+            TicketType ticketType = InputValidate.getValidTicketType(args[4]);
+            String eventName = InputValidate.getInput(args[5]);
+            int eventAge = InputValidate.getIntInput(args[6]);
+            EventType eventType = InputValidate.getValidEventType(args[7]);
+            Event event = Event.createEvent(eventName,eventAge,eventType);
+            Ticket ticket = Ticket.createTicket(name, coordinates, price, ticketType, event, eventTime);
+
+        }
+        else {
+            System.out.println("Ошибка: используйте команду без аргументов для пошагового ввода данных.");
+        }
     }
 
     /**

@@ -36,7 +36,7 @@ public class CountLessThanTypeCommand implements Command {
     public void execute(String[] args) {
         Iterator<Ticket> iterator = tickets.iterator();
         // Получаем валидный тип билета с помощью метода из InputValidate
-        TicketType type = InputValidate.getValidTicketTypeInput(args[0]);
+        TicketType type = InputValidate.getValidTicketType(args[0]);
 
         // Если тип билета корректен
         if (type != null) {

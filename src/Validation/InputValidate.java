@@ -28,6 +28,20 @@ public class InputValidate {
         }
         return null;
     }
+
+    /**
+     * Перегрузка метода getInput, чтобы принимать строковое значение напрямую.
+     *
+     * @param input строковое значение.
+     * @return переданное значение.
+     */
+    public static String getInput(String input) {
+        if (input.equalsIgnoreCase("quit")) {
+            return null;
+        }
+        return input;
+    }
+
     /**
      * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
      * Позволяет пользователю выйти из команды, введя "quit".
@@ -51,6 +65,25 @@ public class InputValidate {
         }
         return Integer.MIN_VALUE;
     }
+
+    /**
+     * Перегрузка метода getIntInput, чтобы принимать строковое значение напрямую.
+     *
+     * @param input строковое значение.
+     * @return целочисленное значение.
+     */
+    public static int getIntInput(String input) {
+        if (input.equalsIgnoreCase("quit")) {
+            return Integer.MIN_VALUE;
+        }
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: введите корректное целочисленное значение.");
+        }
+        return Integer.MIN_VALUE;
+    }
+
     /**
      * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
      * Позволяет пользователю выйти из команды, введя "quit".
@@ -68,8 +101,9 @@ public class InputValidate {
                 break;
             }
             try {
-                if (Integer.parseInt(input) > 0){
-                    return Integer.parseInt(input);
+                int value = Integer.parseInt(input);
+                if (value > 0) {
+                    return value;
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Ошибка: введите корректное положительное целочисленное значение.");
@@ -77,6 +111,28 @@ public class InputValidate {
         }
         return Integer.MIN_VALUE;
     }
+
+    /**
+     * Перегрузка метода getIntInputPlus, чтобы принимать строковое значение напрямую.
+     *
+     * @param input строковое значение.
+     * @return целочисленное значение.
+     */
+    public static int getIntInputPlus(String input) {
+        if (input.equalsIgnoreCase("quit")) {
+            return Integer.MIN_VALUE;
+        }
+        try {
+            int value = Integer.parseInt(input);
+            if (value > 0) {
+                return value;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: введите корректное положительное целочисленное значение.");
+        }
+        return Integer.MIN_VALUE;
+    }
+
     /**
      * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
      * Позволяет пользователю выйти из команды, введя "quit".
@@ -104,24 +160,21 @@ public class InputValidate {
     }
 
     /**
-     * Запрашивает ввод целочисленного значения у пользователя с проверкой корректности.
-     * Позволяет пользователю выйти из команды, введя "quit".
+     * Перегрузка метода getFloatInput, чтобы принимать строковое значение напрямую.
      *
-     * @param input input для считывания ввода пользователя.
-     * @return Корректное целочисленное значение.
+     * @param input строковое значение.
+     * @return корректное число с плавающей точкой.
      */
     public static float getFloatInput(String input) {
-        while (true) {
-            if (input.equalsIgnoreCase("quit")) {
-                break;
+        if (input.equalsIgnoreCase("quit")) {
+            return Float.MIN_VALUE;
+        }
+        try {
+            if (Float.parseFloat(input) > 0) {
+                return Float.parseFloat(input);
             }
-            try {
-                if (Float.parseFloat(input) > 0) {
-                    return Float.parseFloat(input);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Ошибка: введите корректное целочисленное значение.");
-            }
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: введите корректное число с плавающей точкой.");
         }
         return Float.MIN_VALUE;
     }
@@ -154,24 +207,23 @@ public class InputValidate {
         return ticketType; // Возвращаем либо корректное значение, либо null
     }
 
-    public static TicketType getValidTicketTypeInput(String scanner) {
+    /**
+     * Перегрузка метода getValidTicketType, чтобы принимать строковое значение напрямую.
+     *
+     * @param input строковое значение.
+     * @return корректное значение TicketType.
+     */
+    public static TicketType getValidTicketType(String input) {
         TicketType ticketType = null;
-        while (true) {
-            String input =scanner;
-
-            if (input.equalsIgnoreCase("quit")) {
-                break; // Выходим из цикла, но метод продолжает выполняться
-            }
-
-            try {
-                ticketType = TicketType.valueOf(input);
-                break; // Ввод корректный, выходим из цикла
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: допустимые значения - VIP, USUAL, BUDGETARY. Попробуйте снова.");
-                return null;
-            }
+        if (input.equalsIgnoreCase("quit")) {
+            return null;
         }
-        return ticketType; // Возвращаем либо корректное значение, либо null
+        try {
+            ticketType = TicketType.valueOf(input);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: допустимые значения - VIP, USUAL, BUDGETARY.");
+        }
+        return ticketType;
     }
 
     /**
@@ -193,6 +245,19 @@ public class InputValidate {
                 return EventType.valueOf(input);
             } catch (IllegalArgumentException e) {
                 System.out.println("Ошибка: допустимые значения - CONCERT, FOOTBALL, BASKETBALL, OPERA, EXPOSITION. Попробуйте снова.");
+            }
+        }
+        return null;
+    }
+    public static EventType getValidEventType(String input) {
+        while (true) {
+            if (input.equalsIgnoreCase("quit")) {
+                break;
+            }
+            try {
+                return EventType.valueOf(input.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println(input.toUpperCase());
             }
         }
         return null;

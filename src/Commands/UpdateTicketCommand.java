@@ -27,9 +27,81 @@ public class UpdateTicketCommand implements Command {
      *
      * @param args массив строковых аргументов (не используется).
      */
-    @Override
     public void execute(String[] args) {
-        System.out.println("Команда update вводится без аргументов");
+        if (args.length == 9) { // Ожидаем 9 аргументов (1 для ID, 1 для имени, 2 для координат, 1 для цены, 1 для типа билета, 1 для названия события, 1 для возраста события, 1 для типа события)
+            try {
+                // Получаем ID билета
+                int id = InputValidate.getIntInput(args[0]);
+                if (id == Integer.MIN_VALUE) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                // Получаем остальные данные билета
+                String name = InputValidate.getInput(args[1]);
+                if (name == null) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                int x = InputValidate.getIntInput(args[2]);
+                int y = InputValidate.getIntInput(args[3]);
+                Coordinates coordinates = new Coordinates(x, y);
+
+                float price = InputValidate.getFloatInput(args[4]);
+                if (price == Float.MIN_VALUE) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                LocalDateTime eventTime = LocalDateTime.now();
+
+                // Получаем тип билета
+                TicketType ticketType = InputValidate.getValidTicketType(args[5]);
+                if (ticketType == null) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                // Получаем название события
+                String eventName = InputValidate.getInput(args[6]);
+                if (eventName == null) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                // Получаем возраст события
+                int eventAge = InputValidate.getIntInputPlus(args[7]);
+                if (eventAge == Integer.MIN_VALUE) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                // Получаем тип события
+                EventType eventType = InputValidate.getValidEventType(args[8]);
+                if (eventType == null) {
+                    System.out.println("Билет не был обновлен.");
+                    return;
+                }
+
+                // Создаем новое событие
+                Event event = Event.createEvent(eventName, eventAge, eventType);
+
+                // Ищем билет с указанным ID и обновляем его
+                for (Ticket ticket : tickets) {
+                    if (ticket.getId() == id) {
+                        Ticket updatedTicket = Ticket.updateTicket(id, name, coordinates, price, ticketType, event, eventTime);
+                        System.out.println("Билет с ID " + id + " обновлен: " + updatedTicket);
+                        return;
+                    }
+                }
+                System.out.println("Билет с таким ID не найден.");
+            } catch (Exception e) {
+                System.out.println("Ошибка при обновлении билета: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Ошибка: используйте команду без аргументов для пошагового ввода данных.");
+        }
     }
 
     /**
